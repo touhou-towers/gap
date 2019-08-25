@@ -78,13 +78,13 @@ table! {
 pub struct BallraceRecord {
 	#[serde(skip_serializing)]
 	pub id: i32,
-	#[serde(default = "unknown")]
+	#[serde(default = "unknown", rename(serialize = "steamID64"))]
 	pub steam_id64: String,
 	#[serde(default = "unknown")]
 	pub name: String,
-	#[serde(default = "unknown")]
+	#[serde(default = "unknown", rename(serialize = "mapName"))]
 	pub map: String,
-	#[serde(default = "unknown")]
+	#[serde(default = "unknown", rename(serialize = "level"))]
 	pub lvl: String,
 	pub time: f32,
 }
