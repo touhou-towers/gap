@@ -1,3 +1,4 @@
+#![recursion_limit = "128"]
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
@@ -40,6 +41,9 @@ fn handle_connection(mut stream: TcpStream, connection: &mut Db) {
 						Err(_e) => "{}".to_string(),
 					}
 				},
+				[Some("players"), Some("richest"), None] => connection.get_richest_players(),
+				[Some("players"), Some("active"), None] => connection.get_most_active_players(),
+				[Some("players"), Some("blockles"), None] => connection.get_top_tetris_players(),
 				_ => "{}".to_string(),
 			}
 		}
