@@ -22,7 +22,7 @@ fn connect_to_database() -> MysqlConnection {
 
 pub struct Db {
 	// levelname, then level
-	ballrace_results: HashMap<String, HashMap<usize, String>>,
+	ballrace_results: HashMap<String, HashMap<usize, Vec<BallraceRecord>>>,
 	connect: MysqlConnection,
 	updated: SystemTime,
 }
@@ -40,25 +40,38 @@ impl Db {
 		let now = SystemTime::now();
 		if !self.ballrace_results.entry(map.to_string()).or_insert(HashMap::new()).contains_key(&lvl) ||
 			now.duration_since(self.updated).unwrap() >= Duration::new(60 * 60, 0) {
+			println!("Querying information for {} {}", map, lvl);
 			let json =
-				serde_json::to_string_pretty(
 					&gm_ballrace::table
 						.filter(gm_ballrace::map.eq(map).and(sql(&format!("lvl = '{}'", lvl))))
 						.order(gm_ballrace::time)
 						.limit(5)
 						.load::<BallraceRecord>(&self.connect)
-						.unwrap()
-				).unwrap();
+						.unwrap();
 			self.ballrace_results.entry(map.to_string())
 				.or_insert(HashMap::new())
-				.insert(lvl, json);
+				.insert(lvl, json.to_vec());
+			self.updated = now;
 		}
-		self.ballrace_results.get(map)
-			.unwrap()
-			.get(&lvl)
-			.unwrap()
-			.to_string()
+		serde_json::to_string_pretty(
+			&Response {
+				last_updated: now.duration_since(SystemTime::UNIX_EPOCH).unwrap().as_millis(),
+				data: self.ballrace_results.get(map)
+					.unwrap()
+					.get(&lvl)
+					.unwrap()
+					.to_vec()
+			}
+		).unwrap()
 	}
+}
+
+#[derive(Serialize)]
+pub struct Response<T> {
+	#[serde(default = "unknown", rename(serialize = "lastUpdated"))]
+	last_updated: u128,
+	#[serde(default = "unknown")]
+	data: Vec<T>,
 }
 
 table! {
@@ -74,7 +87,7 @@ table! {
 	}
 }
 
-#[derive(Queryable, Serialize)]
+#[derive(Clone, Queryable, Serialize)]
 pub struct BallraceRecord {
 	#[serde(skip_serializing)]
 	pub id: i32,
