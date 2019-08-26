@@ -18,6 +18,7 @@ fn main() {
 
 	for stream in listener.incoming() {
 		let stream = stream.unwrap();
+		// TODO: threads
 		handle_connection(stream, &mut connection);
 	}
 }
@@ -34,7 +35,6 @@ fn handle_connection(mut stream: TcpStream, connection: &mut Db) {
 			path.next(); // starts with a / so get rid of that
 			match [path.next(), path.next(), path.next()] {
 				[Some("ballrace"), Some(map), Some(level)] => {
-					println!("{} {}", map, level);
 					match level.parse::<usize>() {
 						Ok(lvl) => connection.get_ballrace_records(map, lvl),
 						Err(_e) => "{}".to_string(),

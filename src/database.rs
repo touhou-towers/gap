@@ -32,7 +32,7 @@ impl Db {
 		Db {
 			ballrace_results: HashMap::new(),
 			connect: connect_to_database(),
-			updated: SystemTime::now(),
+			updated: SystemTime::UNIX_EPOCH,
 		}
 	}
 
@@ -55,7 +55,7 @@ impl Db {
 		}
 		serde_json::to_string_pretty(
 			&Response {
-				last_updated: now.duration_since(SystemTime::UNIX_EPOCH).unwrap().as_millis(),
+				last_updated: self.updated.duration_since(SystemTime::UNIX_EPOCH).unwrap().as_millis(),
 				data: self.ballrace_results.get(map)
 					.unwrap()
 					.get(&lvl)
