@@ -74,7 +74,7 @@ impl Db {
 		if !self.richest_players.len() == 0 || self.is_cache_outdated() {
 			self.richest_players = (&gm_users::table
 				.order(gm_users::money.desc())
-				.limit(10)
+				.limit(15)
 				.load::<PlayerData>(&self.connect)
 				.unwrap()).to_vec();
 			self.updated = SystemTime::now();
@@ -86,7 +86,7 @@ impl Db {
 		if !self.most_active_players.len() == 0 || self.is_cache_outdated() {
 			self.most_active_players = (&gm_users::table
 				.order(gm_users::money.desc())
-				.limit(10)
+				.limit(15)
 				.load::<PlayerData>(&self.connect)
 				.unwrap()).to_vec();
 			self.updated = SystemTime::now();
@@ -98,7 +98,7 @@ impl Db {
 		if !self.top_tetris_players.len() == 0 || self.is_cache_outdated() {
 			self.top_tetris_players = (&gm_users::table
 				.order(gm_users::tetris_score.desc())
-				.limit(10)
+				.limit(15)
 				.load::<PlayerData>(&self.connect)
 				.unwrap()).to_vec();
 			self.updated = SystemTime::now();
