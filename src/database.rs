@@ -71,7 +71,7 @@ impl Db {
 	}
 
 	pub fn get_richest_players(&mut self) -> String {
-		if !self.richest_players.len() == 0 || self.is_cache_outdated() {
+		if self.richest_players.len() == 0 || self.is_cache_outdated() {
 			self.richest_players = (&gm_users::table
 				.order(gm_users::money.desc())
 				.limit(15)
@@ -83,7 +83,7 @@ impl Db {
 	}
 
 	pub fn get_most_active_players(&mut self) -> String {
-		if !self.most_active_players.len() == 0 || self.is_cache_outdated() {
+		if self.most_active_players.len() == 0 || self.is_cache_outdated() {
 			self.most_active_players = (&gm_users::table
 				.order(gm_users::money.desc())
 				.limit(15)
@@ -95,7 +95,7 @@ impl Db {
 	}
 
 	pub fn get_top_tetris_players(&mut self) -> String {
-		if !self.top_tetris_players.len() == 0 || self.is_cache_outdated() {
+		if self.top_tetris_players.len() == 0 || self.is_cache_outdated() {
 			self.top_tetris_players = (&gm_users::table
 				.order(gm_users::tetris_score.desc())
 				.limit(15)
